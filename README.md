@@ -89,7 +89,9 @@ O projeto estará disponível em:
 
 ## 📱 Screenshots
 
-[Adicione algumas screenshots do app funcionando]
+![Screenshot 1](./screenshots/1.PNG)
+![Screenshot 2](./screenshots/2.PNG)
+![Screenshot 3](./screenshots/3.PNG)
 
 ## 🎯 Diferenciais implementados
 
