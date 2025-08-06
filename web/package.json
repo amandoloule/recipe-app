@@ -11,11 +11,25 @@
     ]
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.1",
+    "@mui/material": "^7.3.1",
     "@redwoodjs/forms": "8.8.0",
     "@redwoodjs/router": "8.8.0",
     "@redwoodjs/web": "8.8.0",
+    "@tiptap/extension-bullet-list": "^3.0.9",
+    "@tiptap/extension-list-item": "^3.0.9",
+    "@tiptap/extension-ordered-list": "^3.0.9",
+    "@tiptap/extension-placeholder": "^3.0.9",
+    "@tiptap/extension-typography": "^3.0.9",
+    "@tiptap/pm": "^3.0.9",
+    "@tiptap/react": "^3.0.9",
+    "@tiptap/starter-kit": "^3.0.9",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "react-hot-toast": "^2.5.2",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@redwoodjs/vite": "8.8.0",

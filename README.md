@@ -1,122 +1,107 @@
-# README
+# App de Receitas - Teste Técnico
 
-Welcome to [RedwoodJS](https://redwoodjs.com)!
+## 🚀 Como executar o projeto
 
-> **Prerequisites**
->
-> - Redwood requires [Node.js](https://nodejs.org/en/) (=20.x) and [Yarn](https://yarnpkg.com/)
-> - Are you on Windows? For best results, follow our [Windows development setup](https://redwoodjs.com/docs/how-to/windows-development-setup) guide
+### Pré-requisitos
 
-Start by installing dependencies:
+- Node.js 20.x
+- Yarn 4.6.0+
 
-```
+### Instalação e execução
+
+```bash
+# 1. Clone o repositório
+git clone [seu-repo]
+cd recipe-app
+
+# 2. Instale as dependências
 yarn install
-```
 
-Then start the development server:
-
-```
-yarn redwood dev
-```
-
-Your browser should automatically open to [http://localhost:8910](http://localhost:8910) where you'll see the Welcome Page, which links out to many great resources.
-
-> **The Redwood CLI**
->
-> Congratulations on running your first Redwood CLI command! From dev to deploy, the CLI is with you the whole way. And there's quite a few commands at your disposal:
->
-> ```
-> yarn redwood --help
-> ```
->
-> For all the details, see the [CLI reference](https://redwoodjs.com/docs/cli-commands).
-
-## Prisma and the database
-
-Redwood wouldn't be a full-stack framework without a database. It all starts with the schema. Open the [`schema.prisma`](api/db/schema.prisma) file in `api/db` and replace the `UserExample` model with the following `Post` model:
-
-```prisma
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  body      String
-  createdAt DateTime @default(now())
-}
-```
-
-Redwood uses [Prisma](https://www.prisma.io/), a next-gen Node.js and TypeScript ORM, to talk to the database. Prisma's schema offers a declarative way of defining your app's data models. And Prisma [Migrate](https://www.prisma.io/migrate) uses that schema to make database migrations hassle-free:
-
-```
+# 3. Configure o banco de dados
 yarn rw prisma migrate dev
 
-# ...
-
-? Enter a name for the new migration: › create posts
+# 4. Execute o projeto
+yarn rw dev
 ```
 
-> `rw` is short for `redwood`
+O projeto estará disponível em:
 
-You'll be prompted for the name of your migration. `create posts` will do.
+- **Web:** http://localhost:8910
+- **API:** http://localhost:8911
+- **GraphQL Playground:** http://localhost:8911/graphql
 
-Now let's generate everything we need to perform all the CRUD (Create, Retrieve, Update, Delete) actions on our `Post` model:
+## 📋 Funcionalidades implementadas
 
-```
-yarn redwood generate scaffold post
-```
+### ✅ Requisitos obrigatórios
 
-Navigate to [http://localhost:8910/posts/new](http://localhost:8910/posts/new), fill in the title and body, and click "Save".
+- [x] **RedwoodJS** com Prisma, GraphQL e React
+- [x] **Material UI** para interface
+- [x] **Tiptap** para edição rica (markdown-like)
+- [x] **SQLite** como banco de dados
+- [x] **Tempo real** via GraphQL subscriptions
 
-Did we just create a post in the database? Yup! With `yarn rw generate scaffold <model>`, Redwood created all the pages, components, and services necessary to perform all CRUD actions on our posts table.
+### ✅ Funcionalidades principais
 
-## Frontend first with Storybook
+- [x] **Feed de receitas em tempo real**
+- [x] **Editor rico com formatação** (listas, negrito, itálico, etc.)
+- [x] **Sistema de likes** com atualização instantânea
+- [x] **Busca avançada** por ingredientes, título, instruções
+- [x] **Sistema de tags/categorização**
+- [x] **Links únicos** para cada receita
+- [x] **Interface responsiva** (mobile + desktop)
+- [x] **Filtros e ordenação** (recentes/populares)
+- [x] **Paginação** para performance
 
-Don't know what your data models look like? That's more than ok—Redwood integrates Storybook so that you can work on design without worrying about data. Mockup, build, and verify your React components, even in complete isolation from the backend:
+## 🏗️ Arquitetura e qualidade
 
-```
-yarn rw storybook
-```
+### Schema do banco otimizado
 
-Seeing "Couldn't find any stories"? That's because you need a `*.stories.{tsx,jsx}` file. The Redwood CLI makes getting one easy enough—try generating a [Cell](https://redwoodjs.com/docs/cells), Redwood's data-fetching abstraction:
+- Índices para busca e ordenação
+- Relacionamentos bem definidos
+- Nomenclatura intuitiva
 
-```
-yarn rw generate cell examplePosts
-```
+### GraphQL bem estruturado
 
-The Storybook server should hot reload and now you'll have four stories to work with. They'll probably look a little bland since there's no styling. See if the Redwood CLI's `setup ui` command has your favorite styling library:
+- Queries eficientes (sem N+1)
+- Subscriptions para tempo real
+- Field resolvers otimizados
 
-```
-yarn rw setup ui --help
-```
+### Componentes organizados
 
-## Testing with Jest
+- Reutilizáveis e modulares
+- Separação de responsabilidades
+- Clean code e padrões consistentes
 
-It'd be hard to scale from side project to startup without a few tests. Redwood fully integrates Jest with both the front- and back-ends, and makes it easy to keep your whole app covered by generating test files with all your components and services:
+### UI/UX destacada
 
-```
-yarn rw test
-```
+- Design moderno com Material UI
+- Animações e micro-interações
+- Tipografia clara e espaçamentos harmoniosos
+- Feedback visual completo
 
-To make the integration even more seamless, Redwood augments Jest with database [scenarios](https://redwoodjs.com/docs/testing#scenarios) and [GraphQL mocking](https://redwoodjs.com/docs/testing#mocking-graphql-calls).
+## 🛠️ Tecnologias utilizadas
 
-## Ship it
+- **Backend:** RedwoodJS, Prisma, GraphQL, SQLite
+- **Frontend:** React, Material UI, Tiptap
+- **Tempo real:** GraphQL Subscriptions + Apollo Cache
+- **Busca:** Full-text search otimizada
+- **Estado:** Apollo Client + React hooks
 
-Redwood is designed for both serverless deploy targets like Netlify and Vercel and serverful deploy targets like Render and AWS:
+## 📱 Screenshots
 
-```
-yarn rw setup deploy --help
-```
+[Adicione algumas screenshots do app funcionando]
 
-Don't go live without auth! Lock down your app with Redwood's built-in, database-backed authentication system ([dbAuth](https://redwoodjs.com/docs/authentication#self-hosted-auth-installation-and-setup)), or integrate with nearly a dozen third-party auth providers:
+## 🎯 Diferenciais implementados
 
-```
-yarn rw setup auth --help
-```
+- **Performance otimizada:** Queries com índices, paginação, debounce
+- **UX superior:** Animações, loading states, toasts informativos
+- **Busca inteligente:** Por múltiplos campos + filtros por tags
+- **Editor avançado:** Tiptap com toolbar completa
+- **Responsive design:** Funciona perfeitamente em mobile
+- **Tempo real:** Receitas e likes atualizados instantaneamente
 
-## Next Steps
+---
 
-The best way to learn Redwood is by going through the comprehensive [tutorial](https://redwoodjs.com/docs/tutorial/foreword) and joining the community (via the [Discourse forum](https://community.redwoodjs.com) or the [Discord server](https://discord.gg/redwoodjs)).
-
-## Quick Links
-
-- Stay updated: read [Forum announcements](https://community.redwoodjs.com/c/announcements/5), follow us on [Twitter](https://twitter.com/redwoodjs), and subscribe to the [newsletter](https://redwoodjs.com/newsletter)
-- [Learn how to contribute](https://redwoodjs.com/docs/contributing)
+**Desenvolvido por [Seu Nome]**  
+📧 [amandolourenco@hotmail.com]  
+🔗 [[seu-linkedin](https://www.linkedin.com/in/amandoloule/)]

@@ -7,12 +7,20 @@
 // 'src/pages/HomePage/HomePage.js'         -> HomePage
 // 'src/pages/Admin/BooksPage/BooksPage.js' -> AdminBooksPage
 
-import { Router, Route } from '@redwoodjs/router'
+import { Set, Router, Route } from '@redwoodjs/router'
+import AppLayout from 'src/layouts/AppLayout'
 
+// Define as rotas principais da aplicação
 const Routes = () => {
   return (
     <Router>
-      <Route notfound page={NotFoundPage} />
+      {/* Usa AppLayout para todas as páginas */}
+      <Set wrap={AppLayout}>
+        {/* Página inicial */}
+        <Route path="/" page={HomePage} name="home" />
+        {/* Página de detalhes da receita */}
+        <Route path="/recipe/{id:String}" page={RecipePage} name="recipe" />
+      </Set>
     </Router>
   )
 }

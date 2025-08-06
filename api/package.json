@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@redwoodjs/api": "8.8.0",
-    "@redwoodjs/graphql-server": "8.8.0"
+    "@redwoodjs/graphql-server": "8.8.0",
+    "@redwoodjs/realtime": "^8.8.0",
+    "socket.io": "^4.8.1"
   }
 }

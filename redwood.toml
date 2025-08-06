@@ -12,10 +12,17 @@
   includeEnvironmentVariables = [
     # Add any ENV vars that should be available to the web side to this array
     # See https://redwoodjs.com/docs/environment-variables#web
+    "SOCKET_PORT",
+    "SOCKET_URL"
   ]
 [api]
   port = 8911
+  [api.ws]
+    enabled = true
+    port = 8912
 [browser]
   open = true
 [notifications]
   versionUpdates = ["latest"]
+[graphql]
+  subscriptions = true
