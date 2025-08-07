@@ -105,5 +105,5 @@ O projeto estará disponível em:
 ---
 
 **Desenvolvido por [Seu Nome]**  
-📧 [amandolourenco@hotmail.com]  
-🔗 [[seu-linkedin](https://www.linkedin.com/in/amandoloule/)]
+📧 amandolourenco@hotmail.com  
+🔗 [https://www.linkedin.com/in/amandoloule/](https://www.linkedin.com/in/amandoloule/)
