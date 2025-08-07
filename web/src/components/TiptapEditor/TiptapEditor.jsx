@@ -1,14 +1,15 @@
+// Imports do Tiptap para funcionalidade de editor
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Typography from '@tiptap/extension-typography'
-import {
-  Box,
-  Paper,
-  Toolbar,
-  IconButton,
+import { 
+  Box, 
+  Paper, 
+  Toolbar, 
+  IconButton, 
   Divider,
-  Typography as MuiTypography,
+  Typography as MuiTypography 
 } from '@mui/material'
 import {
   FormatBold,
@@ -22,7 +23,7 @@ import {
 } from '@mui/icons-material'
 import { styled } from '@mui/material/styles'
 
-// Estilização customizada do conteúdo do editor
+// Estilização do conteúdo do editor
 const StyledEditorContent = styled(Box)(({ theme }) => ({
   '& .ProseMirror': {
     outline: 'none',
@@ -31,8 +32,8 @@ const StyledEditorContent = styled(Box)(({ theme }) => ({
     fontSize: '16px',
     lineHeight: '1.6',
     fontFamily: theme.typography.fontFamily,
-
-    // Estilização dos elementos markdown
+    
+    // Estilos dos elementos de texto
     '& h1': {
       fontSize: '2rem',
       fontWeight: 600,
@@ -71,6 +72,7 @@ const StyledEditorContent = styled(Box)(({ theme }) => ({
       backgroundColor: theme.palette.grey[50],
       padding: theme.spacing(1, 2),
       borderRadius: theme.shape.borderRadius,
+      marginBottom: theme.spacing(2),
     },
     '& code': {
       backgroundColor: theme.palette.grey[100],
@@ -81,46 +83,47 @@ const StyledEditorContent = styled(Box)(({ theme }) => ({
     },
     '& pre': {
       backgroundColor: theme.palette.grey[100],
-      padding: theme.spacing(1),
+      padding: theme.spacing(1.5),
       borderRadius: theme.shape.borderRadius,
       overflow: 'auto',
+      marginBottom: theme.spacing(2),
       '& code': {
         backgroundColor: 'transparent',
         padding: 0,
       },
     },
-    '& p.is-editor-empty:first-child::before': {
+    '& strong': {
+      fontWeight: 600,
+    },
+    // Placeholder quando vazio
+    '& p.is-editor-empty:first-of-type::before': {
       color: theme.palette.text.secondary,
       content: 'attr(data-placeholder)',
       float: 'left',
       height: 0,
       pointerEvents: 'none',
     },
+    // Remove margens do primeiro e último elemento
+    '& > *:first-of-type': {
+      marginTop: 0,
+    },
+    '& > *:last-child': {
+      marginBottom: 0,
+    },
   },
 }))
 
-const TiptapEditor = ({
-  content = '',
-  onChange,
-  placeholder = 'Digite aqui...',
+const TiptapEditor = ({ 
+  content = '', 
+  onChange, 
+  placeholder = 'Digite aqui...', 
   label,
-  minHeight = '150px',
+  minHeight = '150px' 
 }) => {
-  // Inicializa o editor com extensões e placeholder
+  // Configuração do editor Tiptap
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        bulletList: {
-          HTMLAttributes: {
-            class: 'tiptap-bullet-list',
-          },
-        },
-        orderedList: {
-          HTMLAttributes: {
-            class: 'tiptap-ordered-list',
-          },
-        },
-      }),
+      StarterKit,
       Placeholder.configure({
         placeholder,
       }),
@@ -138,7 +141,7 @@ const TiptapEditor = ({
     return null
   }
 
-  // Botão customizado para a toolbar do editor
+  // Componente reutilizável para botões do menu
   const MenuButton = ({ onClick, isActive, children, title }) => (
     <IconButton
       onClick={onClick}
@@ -159,15 +162,14 @@ const TiptapEditor = ({
 
   return (
     <Box>
-      {/* Label opcional */}
       {label && (
         <MuiTypography variant="subtitle2" color="text.secondary" gutterBottom>
           {label}
         </MuiTypography>
       )}
-
+      
       <Paper variant="outlined">
-        {/* Toolbar de formatação */}
+        {/* Barra de ferramentas */}
         <Toolbar variant="dense" sx={{ minHeight: '48px', gap: 0.5 }}>
           <MenuButton
             onClick={() => editor.chain().focus().toggleBold().run()}
@@ -176,7 +178,7 @@ const TiptapEditor = ({
           >
             <FormatBold />
           </MenuButton>
-
+          
           <MenuButton
             onClick={() => editor.chain().focus().toggleItalic().run()}
             isActive={editor.isActive('italic')}
@@ -224,6 +226,7 @@ const TiptapEditor = ({
           <MenuButton
             onClick={() => editor.chain().focus().undo().run()}
             title="Desfazer (Ctrl+Z)"
+            disabled={!editor.can().undo()}
           >
             <Undo />
           </MenuButton>
@@ -231,6 +234,7 @@ const TiptapEditor = ({
           <MenuButton
             onClick={() => editor.chain().focus().redo().run()}
             title="Refazer (Ctrl+Y)"
+            disabled={!editor.can().redo()}
           >
             <Redo />
           </MenuButton>

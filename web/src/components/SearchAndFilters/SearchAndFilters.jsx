@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+// Busca, filtros e ordenação de receitas
+import { useState, useEffect, useRef } from 'react'
 import {
   Box,
   TextField,
@@ -21,7 +22,7 @@ import {
   ExpandMore,
 } from '@mui/icons-material'
 
-// Componente de busca e filtros para receitas
+// Componente principal
 const SearchAndFilters = ({
   onSearchChange,
   onFilterChange,
@@ -29,38 +30,65 @@ const SearchAndFilters = ({
   popularTags = [],
   loading = false,
 }) => {
-  // Estados locais para busca, filtros e ordenação
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('recent')
   const [selectedTags, setSelectedTags] = useState([])
   const [showFilters, setShowFilters] = useState(false)
 
+  // Refs para evitar loops
+  const searchTimeoutRef = useRef(null)
+  const lastFiltersRef = useRef(null)
+
   // Debounce da busca
   useEffect(() => {
-    const timer = setTimeout(() => {
-      onSearchChange?.(searchQuery)
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current)
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      if (onSearchChange && typeof onSearchChange === 'function') {
+        onSearchChange(searchQuery)
+      }
     }, 300)
 
-    return () => clearTimeout(timer)
-  }, [searchQuery, onSearchChange])
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current)
+      }
+    }
+  }, [searchQuery])
 
-  // Atualizar filtros quando mudar
+  // Atualiza filtros quando mudam
   useEffect(() => {
-    onFilterChange?.({
+    const newFilters = {
       tags: selectedTags,
       sortBy,
-    })
-  }, [selectedTags, sortBy, onFilterChange])
+    }
 
-  // Manipula mudança de ordenação
+    const filtersChanged =
+      JSON.stringify(newFilters) !== JSON.stringify(lastFiltersRef.current)
+
+    if (
+      filtersChanged &&
+      onFilterChange &&
+      typeof onFilterChange === 'function'
+    ) {
+      lastFiltersRef.current = newFilters
+      onFilterChange(newFilters)
+    }
+  }, [selectedTags, sortBy])
+
+  // Muda ordenação
   const handleSortChange = (event, newSort) => {
     if (newSort !== null) {
       setSortBy(newSort)
-      onSortChange?.(newSort)
+      if (onSortChange && typeof onSortChange === 'function') {
+        onSortChange(newSort)
+      }
     }
   }
 
-  // Alterna seleção de tags
+  // Adiciona/remove tag
   const handleTagToggle = (tagName) => {
     setSelectedTags((prev) =>
       prev.includes(tagName)
@@ -69,7 +97,7 @@ const SearchAndFilters = ({
     )
   }
 
-  // Limpa todos os filtros
+  // Limpa filtros
   const clearFilters = () => {
     setSelectedTags([])
     setSortBy('recent')
@@ -80,7 +108,7 @@ const SearchAndFilters = ({
 
   return (
     <Paper elevation={1} sx={{ p: 2, mb: 3 }}>
-      {/* Barra de busca principal */}
+      {/* Busca principal */}
       <Box sx={{ mb: 2 }}>
         <TextField
           fullWidth
@@ -103,7 +131,7 @@ const SearchAndFilters = ({
         />
       </Box>
 
-      {/* Controles de ordenação */}
+      {/* Ordenação */}
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={2}
@@ -133,7 +161,7 @@ const SearchAndFilters = ({
           </ToggleButtonGroup>
         </Box>
 
-        {/* Botão para mostrar/ocultar filtros */}
+        {/* Filtros: mostrar/ocultar */}
         <Button
           variant="outlined"
           startIcon={<FilterList />}

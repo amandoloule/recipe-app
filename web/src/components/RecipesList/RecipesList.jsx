@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import {
   Box,
   Typography,
@@ -11,7 +11,6 @@ import { useQuery } from '@redwoodjs/web'
 import RecipeCard from 'src/components/RecipeCard'
 import SearchAndFilters from 'src/components/SearchAndFilters'
 
-// Query principal para receitas
 const RECIPES_QUERY = gql`
   query RecipesQuery {
     recipes {
@@ -32,7 +31,6 @@ const RECIPES_QUERY = gql`
   }
 `
 
-// Query para busca por texto
 const SEARCH_RECIPES_QUERY = gql`
   query SearchRecipesQuery($query: String!) {
     searchRecipes(query: $query) {
@@ -54,7 +52,6 @@ const SEARCH_RECIPES_QUERY = gql`
 `
 
 const RecipesList = () => {
-  // Estados para receitas, filtros, busca e paginação
   const [recipes, setRecipes] = useState([])
   const [filteredRecipes, setFilteredRecipes] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
@@ -65,17 +62,17 @@ const RecipesList = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const recipesPerPage = 10
 
-  // Busca receitas da API
+  // Query principal para receitas
   const { data, loading, error, refetch } = useQuery(RECIPES_QUERY)
 
-  // Busca receitas por texto (condicional)
+  // Query para busca (condicional)
   const {
     data: searchData,
     loading: searchLoading,
     refetch: searchRefetch,
   } = useQuery(SEARCH_RECIPES_QUERY, {
     variables: { query: searchQuery },
-    skip: !searchQuery.trim(), // Só busca se há termo
+    skip: !searchQuery.trim(), // Só executa se há termo de busca
   })
 
   // Carrega receitas iniciais
@@ -85,7 +82,7 @@ const RecipesList = () => {
     }
   }, [data])
 
-  // Filtra e ordena receitas conforme busca e filtros
+  // Filtrar e ordenar receitas
   useEffect(() => {
     let currentRecipes = []
 
@@ -123,18 +120,17 @@ const RecipesList = () => {
     setCurrentPage(1) // Reset página quando filtros mudam
   }, [recipes, searchData, searchQuery, currentFilters])
 
-  // Handler para busca
-  const handleSearchChange = (query) => {
+  // Handler para busca (memo para evitar re-renders desnecessários)
+  const handleSearchChange = useCallback((query) => {
     setSearchQuery(query)
-    // Se há query, a busca será executada automaticamente pelo useQuery
-  }
+  }, [])
 
-  // Handler para filtros
-  const handleFilterChange = (filters) => {
+  // Handler para filtros (memo para evitar re-renders desnecessários)
+  const handleFilterChange = useCallback((filters) => {
     setCurrentFilters(filters)
-  }
+  }, [])
 
-  // Extrai tags populares das receitas
+  // Tags populares (extraídas das receitas atuais)
   const popularTags = recipes
     .flatMap((recipe) => recipe.tags)
     .reduce((acc, tag) => {

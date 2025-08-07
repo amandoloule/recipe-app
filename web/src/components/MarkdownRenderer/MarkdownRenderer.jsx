@@ -1,7 +1,8 @@
+// Renderiza HTML de Markdown com estilos
 import { Box } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
-// Estilização customizada para conteúdo Markdown
+// Estilos para conteúdo Markdown
 const StyledMarkdownContent = styled(Box)(({ theme }) => ({
   '& h1': {
     fontSize: '2rem',
@@ -96,8 +97,8 @@ const StyledMarkdownContent = styled(Box)(({ theme }) => ({
   },
 }))
 
-// Renderiza HTML seguro a partir de conteúdo Markdown
 const MarkdownRenderer = ({ content, ...props }) => {
+  // Não renderiza se não há conteúdo
   if (!content) return null
 
   return (

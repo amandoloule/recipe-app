@@ -1,133 +1,150 @@
 import { db } from 'src/lib/db'
 import { pubSub } from 'src/lib/pubSub'
 
-// Busca receitas com ordenação, limite e inclui tags
-export const recipes = ({
-  orderBy = 'createdAt',
-  sortOrder = 'desc',
-  limit = 50,
-} = {}) => {
+export const recipes = ({ orderBy = 'createdAt', sortOrder = 'desc', limit = 50 } = {}) => {
   return db.recipe.findMany({
-    include: {
+    include: { 
       tags: {
         select: {
           id: true,
           name: true,
-        },
-      },
+        }
+      } 
     },
     orderBy: { [orderBy]: sortOrder },
     take: limit,
   })
 }
 
-// Busca receita por id, incluindo tags
 export const recipe = ({ id }) => {
   return db.recipe.findUnique({
     where: { id },
-    include: {
+    include: { 
       tags: {
         select: {
           id: true,
           name: true,
-        },
-      },
+        }
+      } 
     },
   })
 }
 
-// Busca receitas por texto, incluindo tags
-export const searchRecipes = ({ query, limit = 50 }) => {
-  return db.recipe.findMany({
+// Busca compatível com SQLite - sem mode: insensitive
+export const searchRecipes = async ({ query, limit = 50 }) => {
+  if (!query || query.trim() === '') {
+    return []
+  }
+
+  // Busca básica (case-sensitive no SQLite)
+  const results = await db.recipe.findMany({
     where: {
       OR: [
-        { title: { contains: query, mode: 'insensitive' } },
-        { ingredients: { contains: query, mode: 'insensitive' } },
-        { instructions: { contains: query, mode: 'insensitive' } },
-        { notes: { contains: query, mode: 'insensitive' } },
+        { title: { contains: query } },
+        { ingredients: { contains: query } },
+        { instructions: { contains: query } },
+        { notes: { contains: query } },
         {
           tags: {
             some: {
-              name: { contains: query, mode: 'insensitive' },
-            },
-          },
-        },
+              name: { contains: query }
+            }
+          }
+        }
       ],
     },
-    include: {
+    include: { 
       tags: {
         select: {
           id: true,
           name: true,
-        },
-      },
+        }
+      } 
     },
     orderBy: { createdAt: 'desc' },
-    take: limit,
+    take: limit * 2, // Pegamos mais para filtrar depois
   })
+
+  // Filtro case-insensitive no JavaScript
+  const queryLower = query.toLowerCase()
+  const filteredResults = results.filter(recipe => {
+    const titleMatch = recipe.title.toLowerCase().includes(queryLower)
+    const ingredientsMatch = recipe.ingredients.toLowerCase().includes(queryLower)
+    const instructionsMatch = recipe.instructions.toLowerCase().includes(queryLower)
+    const notesMatch = recipe.notes?.toLowerCase().includes(queryLower) || false
+    const tagsMatch = recipe.tags.some(tag => 
+      tag.name.toLowerCase().includes(queryLower)
+    )
+    
+    return titleMatch || ingredientsMatch || instructionsMatch || notesMatch || tagsMatch
+  })
+
+  return filteredResults.slice(0, limit)
 }
 
-// Busca receitas populares (likes > 0)
 export const popularRecipes = ({ limit = 10 } = {}) => {
   return db.recipe.findMany({
     where: {
       likes: {
-        gt: 0,
-      },
+        gt: 0
+      }
     },
-    include: {
+    include: { 
       tags: {
         select: {
           id: true,
           name: true,
-        },
-      },
+        }
+      } 
     },
-    orderBy: [{ likes: 'desc' }, { createdAt: 'desc' }],
+    orderBy: [
+      { likes: 'desc' },
+      { createdAt: 'desc' }
+    ],
     take: limit,
   })
 }
 
-// Busca receitas recentes
 export const recentRecipes = ({ limit = 20 } = {}) => {
   return db.recipe.findMany({
-    include: {
+    include: { 
       tags: {
         select: {
           id: true,
           name: true,
-        },
-      },
+        }
+      } 
     },
     orderBy: { createdAt: 'desc' },
     take: limit,
   })
 }
 
-// Busca receitas por nome da tag
-export const recipesByTag = ({ tagName, limit = 50 }) => {
-  return db.recipe.findMany({
-    where: {
-      tags: {
-        some: {
-          name: { equals: tagName, mode: 'insensitive' },
-        },
-      },
-    },
-    include: {
+export const recipesByTag = async ({ tagName, limit = 50 }) => {
+  // Busca case-insensitive para tags
+  const results = await db.recipe.findMany({
+    include: { 
       tags: {
         select: {
           id: true,
           name: true,
-        },
-      },
+        }
+      } 
     },
     orderBy: { createdAt: 'desc' },
-    take: limit,
   })
+
+  const tagNameLower = tagName.toLowerCase()
+  const filteredResults = results.filter(recipe =>
+    recipe.tags.some(tag => 
+      tag.name.toLowerCase() === tagNameLower ||
+      tag.name.toLowerCase().includes(tagNameLower)
+    )
+  )
+
+  return filteredResults.slice(0, limit)
 }
 
-// Cria uma nova receita e publica evento
 export const createRecipe = async ({ input }) => {
   const { tags = [], ...recipeData } = input
 
@@ -141,13 +158,13 @@ export const createRecipe = async ({ input }) => {
         })),
       },
     },
-    include: {
+    include: { 
       tags: {
         select: {
           id: true,
           name: true,
-        },
-      },
+        }
+      } 
     },
   })
 
@@ -155,7 +172,6 @@ export const createRecipe = async ({ input }) => {
   return recipe
 }
 
-// Atualiza receita existente
 export const updateRecipe = ({ id, input }) => {
   const { tags, ...recipeData } = input
 
@@ -169,33 +185,32 @@ export const updateRecipe = ({ id, input }) => {
             where: { name: tag.toLowerCase().trim() },
             create: { name: tag.toLowerCase().trim() },
           })),
-        },
-      }),
+        }
+      })
     },
     where: { id },
-    include: {
+    include: { 
       tags: {
         select: {
           id: true,
           name: true,
-        },
-      },
+        }
+      } 
     },
   })
 }
 
-// Incrementa likes e publica evento
 export const likeRecipe = async ({ id }) => {
   const recipe = await db.recipe.update({
     data: { likes: { increment: 1 } },
     where: { id },
-    include: {
+    include: { 
       tags: {
         select: {
           id: true,
           name: true,
-        },
-      },
+        }
+      } 
     },
   })
 
@@ -204,16 +219,15 @@ export const likeRecipe = async ({ id }) => {
   return recipe
 }
 
-// Retorna estatísticas agregadas
 export const recipeStats = async () => {
   const totalRecipes = await db.recipe.count()
   const totalTags = await db.tag.count()
   const totalLikes = await db.recipe.aggregate({
     _sum: {
-      likes: true,
-    },
+      likes: true
+    }
   })
-
+  
   return {
     totalRecipes,
     totalTags,
