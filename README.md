@@ -11,7 +11,7 @@
 
 ```bash
 # 1. Clone o repositório
-git clone [seu-repo]
+git clone https://github.com/amandoloule/recipe-app.git
 cd recipe-app
 
 # 2. Instale as dependências
