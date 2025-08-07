@@ -104,6 +104,6 @@ O projeto estará disponível em:
 
 ---
 
-**Desenvolvido por [Seu Nome]**  
+**Desenvolvido por Amando L. Leal**  
 📧 amandolourenco@hotmail.com  
 🔗 [https://www.linkedin.com/in/amandoloule/](https://www.linkedin.com/in/amandoloule/)
