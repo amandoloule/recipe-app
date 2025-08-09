@@ -68,6 +68,7 @@ const RecipeForm = () => {
   const [notesText, setNotesText] = useState('')
   const [tags, setTags] = useState([])
   const [tagInput, setTagInput] = useState('')
+  const [resetKey, setResetKey] = useState(0)
 
   // Mutation hook para criar receita
   const [createRecipe] = useMutation(CREATE_RECIPE, {
@@ -110,6 +111,7 @@ const RecipeForm = () => {
     setNotesText('')
     setTags([])
     setTagInput('')
+    setResetKey((prevKey) => prevKey + 1) // Força re-renderização dos editores
   }
 
   // Adiciona nova tag à lista
@@ -186,6 +188,7 @@ const RecipeForm = () => {
 
         {/* Campo ingredientes com editor rico */}
         <TiptapEditor
+          key={`ingredients-editor-${resetKey}`}
           label="📝 Ingredientes *"
           content={ingredients}
           onChange={(html, text) => {
@@ -203,6 +206,7 @@ const RecipeForm = () => {
 
         {/* Campo modo de preparo com editor rico */}
         <TiptapEditor
+          key={`instructions-editor-${resetKey}`}
           label="👨‍🍳 Modo de Preparo *"
           content={instructions}
           onChange={(html, text) => {
@@ -244,6 +248,7 @@ const RecipeForm = () => {
 
         {/* Campo notas pessoais com editor rico */}
         <TiptapEditor
+          key={`notes-editor-${resetKey}`}
           label="💡 Notas Pessoais (opcional)"
           content={notes}
           onChange={(html, text) => {
